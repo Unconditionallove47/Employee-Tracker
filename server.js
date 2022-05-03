@@ -2,11 +2,6 @@ const inquirer = require('inquirer');
 const sql = require('./sql');
 const consoleTable = require('console.table');
 
-function begin() {
-console.log("Hello welcome to the main menu");
-mainmenu();
-}
-
 
 function  mainmenu() {
 inquirer.prompt({
@@ -23,8 +18,36 @@ inquirer.prompt({
     "update employee role",
     "quit"
     ],
-
+//TAKEN FROM OLD HOMEWORK DOUBLE CHECK IT WORKS
 }).then(answers => {
     console.log(answers.choice)
 })
+}
+mainmenu();
+
+switch (answers.choice) {
+    case "view all employees":
+        viewEmployee();
+        break;
+    case "view all departments":
+        viewDepartment();
+        break;
+    case "view all roles":
+        viewRoles();
+        break;
+    case "add employee":
+        addEmployee();
+        break;
+    case "add department":
+        addDepartment();
+        break;
+    case "add role":
+        addRoles();
+        break;
+    case "update employee role":
+        updateRoles();
+        break;
+    default:
+        db.end();
+        break;
 }
