@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
-const sql = require('./sql');
-const consoleTable = require('console.table');
+const mysql = require('mysql2');
 
 
 function  mainmenu() {
@@ -24,7 +23,7 @@ inquirer.prompt({
 })
 }
 mainmenu();
-
+//switch case setup
 switch (answers.choice) {
     case "view all employees":
         viewEmployee();
@@ -47,7 +46,131 @@ switch (answers.choice) {
     case "update employee role":
         updateRoles();
         break;
+     case"update employee":
+        updateEmployee(); 
+        break;      
     default:
         db.end();
         break;
 }
+function viewEmployee() {
+    db.query("SELECT * FROM employee", (err,data)=>{
+        err? err : console.table(data);
+        prompts();
+    })
+};
+// Create path to view list of roles
+function viewRoles() {
+    db.query("SELECT * FROM roles", (err,data)=>{
+        err? err : console.table(data);
+        prompts();
+    })
+};
+// Create path to view list of departments
+function viewDepartment() {
+    db.query("SELECT * FROM department", (err,data)=>{
+        err? err : console.table(data);
+        prompts();
+    })
+};
+// Create path to add an employee
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type:"input",
+            message:"What is the employee's first name?",
+            name:"first",
+        },{
+            type:"input",
+            message:"What i the employee's last name?",
+            name:"last"
+        },{
+            type:"number",
+            message:"What is the employee's role ID number?",
+            name:"roleId"
+        },{
+            type:"number",
+            message:"What manager ID does the employee fall under?",
+            name:"manId"
+        }
+    ]).then((answers)=>{
+        db.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",[answers.first,answers.last,answers.roleId,answers.manId],(err,data)=>{
+            if (err) {
+                throw err
+            }
+            console.table(data);
+            prompts();
+        });
+    })
+};
+// Create path to add an employee role
+function addRoles() {
+    inquirer.prompt([
+        {
+            type:"input",
+            message:"What is the title of the role?",
+            name:"roleTitle"
+        },{
+            type:"number",
+            message:"What is the salary for the role?",
+            name:"roleSal"
+        },{
+            type:"number",
+            message:"What is the department ID?",
+            name:"roleDep"
+        }
+    ])
+    .then((answers)=>{
+        db.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)", [answers.roleTitle, answers.roleSal, answers.roleDep], (err,data)=>{
+            if (err) {
+                throw err
+            }
+            console.table(data);
+            prompts();
+        })
+    })
+};
+// Create path to add a department
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type:"input",
+            message:"What is the name of the new department?",
+            name:"dept"
+        }
+    ])
+    .then((answers)=>{
+        db.query("INSERT INTO department (department_name) VALUES (?)", answers.dept, (err,data)=>{
+            if (err) {
+                throw err
+            }
+            console.table(data);
+            prompts();
+        })
+    })
+};
+// Create path to update employee
+function updateEmployee() {
+    inquirer.prompt([
+        {
+            type:"number",
+            message:"What is the employee ID you want to change?",
+            name:"updateEmp"
+        },{
+            type:"number",
+            message:"What is new manager ID?",
+            name:"updateMan"            
+        }
+    ])
+    .then((answers)=>{
+        db.query("UPDATE employee SET manager_id = ? WHERE id = ?", [answers.updateMan,answers.updateEmp], (err,data)=>{
+            if (err) {
+                throw err
+            }
+            console.table(data);
+            prompts();
+        })
+    })
+};
+
+prompts();
