@@ -2,7 +2,7 @@
   "dependencies": {
     "console-table": "^0.1.2",
     "inquirer": "^8.2.4",
-    "mysql2": "^2.3.3",
-    "sql": "^0.78.0"
+    "mysql2": "^2.3.3"
+
   }
 }
